@@ -11,8 +11,6 @@ R_1 = R(1,:);
 R_2 = R(2,:);
 R_3 = R(3,:);
 
-%% need to check whether need to do [x,y,z]
-
 %% feature with depth
 x_bar_k = featureCurrent(1:k,2)./featureCurrent(1:k,3); % [k 1]
 y_bar_k = featureCurrent(1:k,1)./featureCurrent(1:k,3); % [k 1]

@@ -11,16 +11,16 @@ minFeatNum = 50; % The minimum number of features to keep in one frame
 distribute = [32,32]; % How should the uniform grid form for feature extraction
 BAGap = 0;% 5 image-to-save for BA gap
 BADo = 0;% 40 how many images to do one BA
-load intrinsicROSDefault.mat
+%load intrinsicROSDefault.mat
 
 %% Initialization
 % fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
 % fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth/';
 % fpathFLO = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
-% data = loadData(fpathRGB,fpathDEP);
-% flow = loadFlow(fpathFLO);
-load ../data/flow.mat
-load ../data/data.mat
+%data = loadData(fpathRGB,fpathDEP);
+%flow = loadFlow(fpathFLO);
+%load ../data/flow.mat
+%load ../data/data.mat
 poses = initialPose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
 [featurePrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
@@ -29,9 +29,9 @@ totalStamp = size(data{1},3);
 % main loop
 for i = 2:totalStamp
     % add in data
-    grayPrev = data{1}(:,:,i-1);
-    depPrev = data{2}(:,:,i-1);
-    grayCurr = data{1}(:,:,i);
+    grayPrev = [];% data{1}(:,:,i-1);
+    depPrev = [];% data{2}(:,:,i-1);
+    grayCurr = [];% data{1}(:,:,i);
     depCurr = data{1}(:,:,i);
     flowmap = flow{i-1};
     % optical Flow the track the feature to current frame
@@ -58,9 +58,5 @@ for i = 2:totalStamp
 end
    
 %% Save and visualization
-gt = fileread('../data/rgbd_dataset_freiburg1_xyz/groundtruth.txt');
-t1 = gt(101:166);
-% compare to groud truth 
-
 	
 
