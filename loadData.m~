@@ -13,7 +13,7 @@ DEP_imgefiles = dir(strcat(fpathDEP,'/*.png'));
 RGB_file_num = length(RGB_imagefiles);
 DEP_file_num = length(DEP_imgefiles);
 assert(RGB_file_num == DEP_file_num);
-
+%{
 [img_height, imwidth, ~] = size(imread(strcat(fpathRGB, RGB_imagefiles(1).name)));
 data{1} = zeros(img_height,imwidth,RGB_file_num);
 data{2} = zeros(img_height,imwidth,DEP_file_num);
@@ -23,3 +23,5 @@ end
 for i = 1 : DEP_file_num
     data{2}(:,:,i) = double(imread(strcat(fpathDEP, DEP_imgefiles(i).name)))/5000.0;
 end
+%}
+load ../data/data.mat

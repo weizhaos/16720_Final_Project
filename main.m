@@ -17,12 +17,13 @@ BADo = 0;% 40 how many images to do one BA
 load intrinsicROSDefault.mat
 
 %% Initialization
-fpathRGB = [];
-fpathDEP = [];
-data = loadData(fpathRGB,fpathDEP);
+% fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
+% fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth/';
+% data = loadData(fpathRGB,fpathDEP);
+% load ../data/data.mat
 poses = initialpose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
-[featurePrev, k] = featureExtraction([], data{1}(:,:,1), maxFeatNum, distribute);
+[featurePrev, depPrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
 
 %% Frame to Frame
 % main loop
@@ -47,13 +48,15 @@ for i = 2:totalStamp
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
         % or directly re-extract all features, which should be better
-        featurCurrent = featureExtraction(featurCurrent, data{1}(:,:,i), ...
-            maxFeatNum-size(featurCurrent,1), distribute);
+        [featurCurrent, depthCurrent, k] = featureExtraction(data{1}(:,:,i), ...
+            data{2}(:,:,i), maxFeatNum, distribute);
     end
     featurePrev = featurCurrent;
+    depthPrev = depthCurrent;
 end
    
 %% Save and visualization
+gt = fileread('../data/rgbd_dataset_freiburg1_xyz/groundtruth.txt');
 % compare to groud truth 
 
 	

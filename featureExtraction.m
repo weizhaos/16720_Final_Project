@@ -1,35 +1,33 @@
-function [feature, k] = featureExtraction(prevFeature, image, N, window)
+function [feature, depthF, k] = featureExtraction(image, depth, N, window)
 % This function extract a certain number of feature evenly among the image 
-% If prevFeature is empty, this is the initialization.
-% If prevFeature is not empty, the output is augmented with preFeature
-% INPUT: image [H W], feature number to extract N, prevFeature [Mp 3]
+% INPUT: image [H W], depth [H W], feature number to extract N
 %        distribute [1 2] how should the uniform area form: divide row by
 %        the first element, divide column by the second element
 % OUTPUT: the extracted features [M 3]
 feature_points = detectFASTFeatures(image);
 strongest = feature_points.selectStrongest(500);
 feature = zeros(0,3);
-feature_candidate = zeros(0,4);
-[height, width] = size(image);
-feature_candidate = [strongest.Location,strongest.Metric,repmat(1,[500,1])];
+[~, width] = size(image);
+feature_candidate = [strongest.Location,strongest.Metric,ones([500,1])];
 for i = 1 : 500
     feature_candidate(i,4) = floor(feature_candidate(i,2)/window(1))*(width/window(2))...
         +(floor(feature_candidate(i,1)/window(2)));  
 end
 unique_window = unique(feature_candidate(:,4));
 for i = 1 : length(unique_window)
-    ind = find(feature_candidate(:,4) == unique_window(i));
-    point = feature_candidate(ind,:,:,:);
+    point = feature_candidate(feature_candidate(:,4) == unique_window(i),:,:,:);
     [~,max_ind] = max(point(:,3));
     feature = [feature;[point(max_ind,1),point(max_ind,2),0]];
 end
 k = unique_window;
+%{
 figure();
 imshow(image)
 hold on
 for i = 1 : length(feature)
     scatter(feature(i,1),feature(i,2),'b');
 end
+%}
 end
 % feature = zeros(0,3);
 % block_height = height/distribute(1);
