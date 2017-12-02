@@ -19,8 +19,11 @@ load intrinsicROSDefault.mat
 %% Initialization
 % fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
 % fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth/';
+% fpathFLO = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
 % data = loadData(fpathRGB,fpathDEP);
-% load ../data/data.mat
+% flow = loadFlow(fpathFLO);
+load ../data/flow.mat
+load ../data/data.mat
 poses = initialpose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
 [featurePrev, depPrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
@@ -57,6 +60,7 @@ end
    
 %% Save and visualization
 gt = fileread('../data/rgbd_dataset_freiburg1_xyz/groundtruth.txt');
+t1 = gt(101:166);
 % compare to groud truth 
 
 	
