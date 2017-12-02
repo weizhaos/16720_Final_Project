@@ -1,4 +1,4 @@
-function [feature, depth_feature, k] = featureExtraction(image, depth, N, window)
+function [feature, k] = featureExtraction(image, depth, N, window)
 % This function extract a certain number of feature evenly among the image 
 % INPUT: image [H W], depth [H W], feature number to extract N
 %        distribute [1 2] how should the uniform area form: divide row by
@@ -19,14 +19,15 @@ unique_window = unique(feature_candidate(:,4));
 for i = 1 : length(unique_window)
     point = feature_candidate(feature_candidate(:,4) == unique_window(i),:,:,:);
     [~,max_ind] = max(point(:,3));
-    feature = [feature;[point(max_ind,2),point(max_ind,1),1]];
-end
-for i = 1 : length(feature)
-    if (depth(feature(i,1),feature(i,2)) ~= 0)
-        depth_feature = [depth_feature;[feature(i,1),feature(i,2),depth(feature(i,1),feature(i,2))]];
+    feature_tmp = [point(max_ind,2),point(max_ind,1)];
+    if (depth(feature_tmp(1),feature_tmp(2)) ~= 0)
         k = k + 1;
+        feature = [[feature_tmp(1),feature_tmp(2),depth(feature_tmp(1),feature_tmp(2))];feature];
+    else
+        feature = [feature;[feature_tmp(1),feature_tmp(2),1]];
     end
 end
+feature = double(feature);
 end
 %{
 figure();
