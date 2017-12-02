@@ -53,8 +53,8 @@ for i = 2:totalStamp
         [featurCurrent, k] = featureExtraction(data{1}(:,:,i), ...
             data{2}(:,:,i), maxFeatNum, distribute);
     end
-    featurePrev = featurCurrent;
-    depthPrev = depthCurrent;
+    featurePrev = featureCurrent;
+    depPrev = depCurr;
 end
    
 %% Save and visualization
@@ -70,7 +70,7 @@ qx = zeros(3000,1);
 qy = zeros(3000,1);
 qz = zeros(3000,1);
 qw = zeros(3000,1);
-for i = 1 : 3000
+for i = 352 : 3000
     tx(i) = str2double(strcat(file(k(i)+16),file(k(i)+17),file(k(i)+18),strcat(file(k(i)+19),file(k(i)+20),file(k(i)+21))));
     ty(i) = str2double(strcat(file(k(i)+23),file(k(i)+24),file(k(i)+25),strcat(file(k(i)+26),file(k(i)+27),file(k(i)+28))));
     tz(i) = str2double(strcat(file(k(i)+30),file(k(i)+31),file(k(i)+32),strcat(file(k(i)+33),file(k(i)+34),file(k(i)+35))));
@@ -79,6 +79,11 @@ for i = 1 : 3000
     qz(i) = str2double(strcat(file(k(i)+51),file(k(i)+52),file(k(i)+53),strcat(file(k(i)+54),file(k(i)+55),file(k(i)+56))));
     qw(i) = str2double(strcat(file(k(i)+58),file(k(i)+59),file(k(i)+60),strcat(file(k(i)+61),file(k(i)+62),file(k(i)+63))));
 end
-
+% plot groundtruth
+pose = [0,0,0];
+for i = 352:3000
+   pose = [pose;[pose(i-351,1)+tx(i),pose(i-351,2)+ty(i),pose(i-351,3)+tz(i)]]; 
+end
+plot3(pose(:,1),pose(:,2),pose(:,3));
 	
 
