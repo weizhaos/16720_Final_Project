@@ -11,7 +11,7 @@ nFeature = size(featurePrev,1);
 for i = 1:k
     pos = featurePrev(i,1:2);
     flow = flowmap(floor(pos(1)),floor(pos(2)),:);
-    new_pos = floor(pos + [flow(1) flow(2)]);
+    new_pos = floor(pos + [flow(2) flow(1)]);
     if new_pos(1) <= 0 || new_pos(1) > imgsize(1) || new_pos(2) <= 0 || new_pos(2) > imgsize(2)
         % remove the feature
         featurePrev(i,:) = [];
@@ -26,7 +26,7 @@ end
 for i = k+1:nFeature
     pos = featurePrev(i,1:2);
     flow = flowmap(floor(pos(1)),floor(pos(2)),:);
-    new_pos = floor(pos + [flow(1) flow(2)]);
+    new_pos = floor(pos + [flow(2) flow(1)]);
     if new_pos(1) <= 0 || new_pos(1) > imgsize(1) || new_pos(2) <= 0 || new_pos(2) > imgsize(2)
         % remove the feature
         featurePrev(i,:) = [];
