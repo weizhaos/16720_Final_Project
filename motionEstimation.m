@@ -36,7 +36,7 @@ for k = 1:iter
     theta1 = theta(1); theta2 = theta(2); theta3 = theta(3);
     T1 = T(1); T2 = T(2); T3 = T(3);
     jacoNUM = subs(jacoSYM); % [2*numD+(M-numD) 6]
-    % TODO: update damping factor
+    % update damping factor
     SOS = sum(residue.^2);
     if lastSOS ~= Inf
         if SOS < lastSOS

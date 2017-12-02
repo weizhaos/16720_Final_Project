@@ -1,5 +1,0 @@
-function loadFlow(fpathFLO)
-FLO_imagefiles = dir(strcat(fpathRGB,'/*.png'));
-
-
-end

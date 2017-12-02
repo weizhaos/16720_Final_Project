@@ -23,7 +23,7 @@ load ../data/flow.mat
 load ../data/data.mat
 poses = initialPose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
-[featurePrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
+[featurePrev, depPrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
 
 %% Frame to Frame
 % main loop
@@ -50,7 +50,7 @@ for i = 2:totalStamp
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
         % or directly re-extract all features, which should be better
-        [featurCurrent, k] = featureExtraction(data{1}(:,:,i), ...
+        [featurCurrent, depthCurrent, k] = featureExtraction(data{1}(:,:,i), ...
             data{2}(:,:,i), maxFeatNum, distribute);
     end
     featurePrev = featurCurrent;
