@@ -19,7 +19,7 @@ unique_window = unique(feature_candidate(:,4));
 for i = 1 : length(unique_window)
     point = feature_candidate(feature_candidate(:,4) == unique_window(i),:,:,:);
     [~,max_ind] = max(point(:,3));
-    feature = [feature;[point(max_ind,2),point(max_ind,1),0]];
+    feature = [feature;[point(max_ind,2),point(max_ind,1),1]];
 end
 for i = 1 : length(feature)
     if (depth(feature(i,1),feature(i,2)) ~= 0)
