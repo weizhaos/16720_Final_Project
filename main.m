@@ -35,11 +35,11 @@ for i = 2:totalStamp
     grayCurr = [];% data{1}(:,:,i);
     depCurr = data{1}(:,:,i);
     flowmap = flow{i-1};
-    % optical Flow the track the feature to current frame
+    % optical Flow to track the feature to current frame
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
     % solve frame to frame motion estimation
-    deltaPos = motionEstimation(featurePrev, featureCurrent, k, deltaPos);
+    deltaPos = motionEstimation(featurePrev, featureCurrent, k, initialPose());
     % add in poses
     deltaPosT = [deltaPosT; deltaPos];
     % poses = [poses; poses(end,:)+deltaPos];

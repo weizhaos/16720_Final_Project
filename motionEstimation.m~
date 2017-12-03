@@ -1,4 +1,4 @@
-function deltPos = motionEstimation(featurePrev, featureCurrent, numD, deltaPosInit)
+function deltaPos = motionEstimation(featurePrev, featureCurrent, numD, deltaPosInit)
 % This function implements algorithm one
 % INPUT: featurePrev [M 3] 
 %        featureCurrent [M 3] The first k rows of them are features with
@@ -24,7 +24,7 @@ temp = featureCurrent(:,1);
 featureCurrent(:,1) = featureCurrent(:,2);
 featureCurrent(:,2) = temp;
 
-%{
+%
 %% inner solver
 featureCurrent(:,3) = ones(size(featureCurrent,1),1);
 options.Algorithm = 'levenberg-marquardt';

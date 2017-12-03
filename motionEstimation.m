@@ -24,20 +24,20 @@ temp = featureCurrent(:,1);
 featureCurrent(:,1) = featureCurrent(:,2);
 featureCurrent(:,2) = temp;
 
-%{
+%
 %% inner solver
 featureCurrent(:,3) = ones(size(featureCurrent,1),1);
 options.Algorithm = 'levenberg-marquardt';
 options.MaxFunctionEvaluations = 10000;
 fun = @(deltPos) myFun(deltPos, featurePrev, featureCurrent, numD);
-deltPos = lsqnonlin(fun,deltaPosInit,[],[],options);
+[deltaPos,resnorm] = lsqnonlin(fun,deltaPosInit,[],[],options);
 %}
 % minPose = fminunc(@myFun, pose, ...
 %            optimset ('MaxFunEvals', 10000, ...
 %                      'MaxIter', 100000, ....
 %                      'Algorithm', 'levenberg-marquardt'), ...%, ...
 %                      featurePrev, featureCurrent, numD);
-%
+%{
 %% calculate Jacobian
 syms dp1 dp2 dp3 dp4 dp5 dp6
 residue = myFun([dp1 dp2 dp3 dp4 dp5 dp6], featurePrev, featureCurrent, numD);
