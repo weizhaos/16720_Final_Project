@@ -53,8 +53,8 @@ for i = 2:totalStamp
         [featurCurrent, k] = featureExtraction(data{1}(:,:,i), ...
             data{2}(:,:,i), maxFeatNum, distribute);
     end
-    featurePrev = featurCurrent;
-    depthPrev = depthCurrent;
+    featurePrev = featureCurrent;
+    depPrev = depCurr;
 end
    
 %% Save and visualization
