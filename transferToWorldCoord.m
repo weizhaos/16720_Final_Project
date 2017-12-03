@@ -9,6 +9,8 @@ temp = featureCurrent(:,1);
 featureCurrent(:,1) = featureCurrent(:,2);
 featureCurrent(:,2) = temp;
 % times the lambda
+% currrent feature does not have depth available
+featureCurrent(:,3) = ones(size(featureCurrent,1),1);
 featurePrev(:,1) = featurePrev(:,1) .* featurePrev(:,3);
 featureCurrent(:,1) = featureCurrent(:,1) .* featureCurrent(:,3);
 % conversion
