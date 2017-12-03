@@ -44,7 +44,7 @@ for i = 2:totalStamp
     % transfer to 3D world coordinates
     [Xprev, Xcurrent] = transferToWorldCoord(K, featurePrev, featureCurrent);
     % solve frame to frame motion estimation
-    deltaPos = motionEstimation(Xprev, Xcurrent, k, initialPose());
+    deltaPos = motionEstimation(Xprev, Xcurrent, k, deltaPos);
     % add in poses
     deltaPosT = [deltaPosT; deltaPos];
     % poses = [poses; poses(end,:)+deltaPos];

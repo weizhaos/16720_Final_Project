@@ -8,7 +8,7 @@ function [pos] = cameraPos(initialPos,delta)
     pos(1,:) = initialPos;
     for i = 1:size(delta,1)
         temp = rodrigues(delta_r(i,:))*pos(i,:)' + delta_t(i,:)';
-        det(rodrigues(delta_r(i,:)))
+        %det(rodrigues(delta_r(i,:)))
         pos(i+1,:) = temp';
     end
 end
