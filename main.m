@@ -11,7 +11,10 @@ minFeatNum = 50; % The minimum number of features to keep in one frame
 distribute = [32,32]; % How should the uniform grid form for feature extraction
 BAGap = 0;% 5 image-to-save for BA gap
 BADo = 0;% 40 how many images to do one BA
-%load intrinsicROSDefault.mat
+load intrinsicROSDefault.mat
+K = [fx, 0 , cx;
+     0 , fy, cy;
+     0 , 0 ,  1;];
 
 %% Initialization
 % fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
@@ -38,8 +41,10 @@ for i = 2:totalStamp
     % optical Flow to track the feature to current frame
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
+    % transfer to 3D world coordinates
+    [Xprev, Xcurrent] = transferToWorldCoord(K, featurePrev, featureCurrent);
     % solve frame to frame motion estimation
-    deltaPos = motionEstimation(featurePrev, featureCurrent, k, initialPose());
+    deltaPos = motionEstimation(Xprev, Xcurrent, k, initialPose());
     % add in poses
     deltaPosT = [deltaPosT; deltaPos];
     % poses = [poses; poses(end,:)+deltaPos];

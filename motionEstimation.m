@@ -1,4 +1,4 @@
-function deltaPos = motionEstimation(featurePrev, featureCurrent, numD, deltaPosInit)
+function deltaPos = motionEstimation(Xprev, Xcurrent, numD, deltaPosInit)
 % This function implements algorithm one
 % INPUT: featurePrev [M 3] 
 %        featureCurrent [M 3] The first k rows of them are features with
@@ -15,21 +15,11 @@ BOOST = 1.5; % LM damping factor
 lastSOS = Inf; % Sum of Square
 lastddeltaPose = 0; % LM delta vector
 
-%% convert [H,W] to [x,y]
-temp = featurePrev(:,1);
-featurePrev(:,1) = featurePrev(:,2);
-featurePrev(:,2) = temp;
-
-temp = featureCurrent(:,1);
-featureCurrent(:,1) = featureCurrent(:,2);
-featureCurrent(:,2) = temp;
-
-%
 %% inner solver
-featureCurrent(:,3) = ones(size(featureCurrent,1),1);
+%Xcurrent(:,3) = ones(size(Xcurrent,1),1);
 options.Algorithm = 'levenberg-marquardt';
 options.MaxFunctionEvaluations = 10000;
-fun = @(deltPos) myFun(deltPos, featurePrev, featureCurrent, numD);
+fun = @(deltPos) myFun(deltPos, Xprev, Xcurrent, numD);
 [deltaPos,resnorm] = lsqnonlin(fun,deltaPosInit,[],[],options);
 %}
 % minPose = fminunc(@myFun, pose, ...
@@ -40,14 +30,14 @@ fun = @(deltPos) myFun(deltPos, featurePrev, featureCurrent, numD);
 %{
 %% calculate Jacobian
 syms dp1 dp2 dp3 dp4 dp5 dp6
-residue = myFun([dp1 dp2 dp3 dp4 dp5 dp6], featurePrev, featureCurrent, numD);
+residue = myFun([dp1 dp2 dp3 dp4 dp5 dp6], Xprev, Xcurrent, numD);
 jacoSYM = jacobian(residue,[dp1 dp2 dp3 dp4 dp5 dp6]);
 
 %% stack for optimization
 deltaPos = deltaPosInit;
 for k = 1:iter
     % assign bisquare weight [2*numD+(M-numD) 1]
-    residue = myFun(deltaPos, featurePrev, featureCurrent, numD); 
+    residue = myFun(deltaPos, Xprev, Xcurrent, numD); 
     MAD = median(abs(residue-median(residue)));
     temp = 1-( residue./(6*MAD) ).^2;
     temp(temp<0) = 0;

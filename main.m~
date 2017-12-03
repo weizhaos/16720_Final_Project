@@ -11,7 +11,10 @@ minFeatNum = 50; % The minimum number of features to keep in one frame
 distribute = [32,32]; % How should the uniform grid form for feature extraction
 BAGap = 0;% 5 image-to-save for BA gap
 BADo = 0;% 40 how many images to do one BA
-%load intrinsicROSDefault.mat
+load intrinsicROSDefault.mat
+K = [fx, 0 , cx;
+     0 , fy, cy;
+     0 , 0 ,  1;];
 
 %% Initialization
 % fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
@@ -27,6 +30,7 @@ totalStamp = size(data{1},3);
 
 %% Frame to Frame
 % main loop
+deltaPosT = [];
 for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
@@ -34,13 +38,16 @@ for i = 2:totalStamp
     grayCurr = [];% data{1}(:,:,i);
     depCurr = data{1}(:,:,i);
     flowmap = flow{i-1};
-    % optical Flow the track the feature to current frame
+    % optical Flow to track the feature to current frame
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
+    % transfer to 3D world coordinates
+    [Xprev, Xcurrent] = transferToWorldCoord(K, featurePrev, featureCurrent);
     % solve frame to frame motion estimation
-    deltaPos = motionEstimation(featurePrev, featureCurrent, k, deltaPos);
+    deltaPos = motionEstimation(Xprev, featureCurrent, k, initialPose());
     % add in poses
-    poses = [poses; poses(end,:)+deltaPos];
+    deltaPosT = [deltaPosT; deltaPos];
+    % poses = [poses; poses(end,:)+deltaPos];
     % BA
     if mod(i,BAGap) == 0
     end
@@ -82,8 +89,8 @@ end
 % plot groundtruth
 poseGT = [0,0,0];
 for i = 2:3000
-   poseGT = [poseGT;[poseGT(i-1,1)+tx(i),poseGT(i-1,2)+ty(i),poseGT(i-2,3)+tz(i)]]; 
+   poseGT = [poseGT;[poseGT(i-1,1)+tx(i),poseGT(i-1,2)+ty(i),poseGT(i-1,3)+tz(i)]]; 
 end
-plot3(poseGT(:,1),poseGT(:,2),poseGT(:,3));
+plot3(tx(i),ty(i),tz(i));
 	
 
