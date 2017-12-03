@@ -7,11 +7,10 @@ function [feature, k] = featureExtraction(image, depth, N, window)
 feature_points = detectFASTFeatures(image);
 strongest = feature_points.selectStrongest(500);
 feature = zeros(0,3);
-depth_feature = zeros(0,3);
 [~, width] = size(image);
-feature_candidate = [strongest.Location,strongest.Metric,ones([500,1])];
+feature_candidate = [strongest.Location,strongest.Metric,ones([size(strongest.Location,1),1])];
 k = 0;
-for i = 1 : 500
+for i = 1 : size(strongest.Location,1)
     feature_candidate(i,4) = floor(feature_candidate(i,2)/window(1))*(width/window(2))...
         +(floor(feature_candidate(i,1)/window(2)));  
 end

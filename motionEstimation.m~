@@ -1,4 +1,4 @@
-function deltaPos = motionEstimation(featurePrev, featureCurrent, numD, deltaPosInit)
+function deltPos = motionEstimation(featurePrev, featureCurrent, numD, deltaPosInit)
 % This function implements algorithm one
 % INPUT: featurePrev [M 3] 
 %        featureCurrent [M 3] The first k rows of them are features with
@@ -37,7 +37,7 @@ deltPos = lsqnonlin(fun,deltaPosInit,[],[],options);
 %                      'MaxIter', 100000, ....
 %                      'Algorithm', 'levenberg-marquardt'), ...%, ...
 %                      featurePrev, featureCurrent, numD);
-%
+%{
 %% calculate Jacobian
 syms dp1 dp2 dp3 dp4 dp5 dp6
 residue = myFun([dp1 dp2 dp3 dp4 dp5 dp6], featurePrev, featureCurrent, numD);

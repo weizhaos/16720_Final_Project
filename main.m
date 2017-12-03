@@ -21,12 +21,13 @@ BADo = 0;% 40 how many images to do one BA
 %flow = loadFlow(fpathFLO);
 %load ../data/flow.mat
 %load ../data/data.mat
-poses = initialPose(); % [1 6] now, later [N 6]
+deltaPos = initialPose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
 [featurePrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
 
 %% Frame to Frame
 % main loop
+deltaPosT = [];
 for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
@@ -38,9 +39,10 @@ for i = 2:totalStamp
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
     % solve frame to frame motion estimation
-    poseTemp = motionEstimation(featurePrev, featureCurrent, k, poses(end,:));
+    deltaPos = motionEstimation(featurePrev, featureCurrent, k, deltaPos);
     % add in poses
-    poses = [poses; poseTemp];
+    deltaPosT = [deltaPosT; deltaPos];
+    % poses = [poses; poses(end,:)+deltaPos];
     % BA
     if mod(i,BAGap) == 0
     end
@@ -50,7 +52,7 @@ for i = 2:totalStamp
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
         % or directly re-extract all features, which should be better
-        [featurCurrent, k] = featureExtraction(data{1}(:,:,i), ...
+        [featureCurrent, k] = featureExtraction(data{1}(:,:,i), ...
             data{2}(:,:,i), maxFeatNum, distribute);
     end
     featurePrev = featureCurrent;
@@ -80,10 +82,10 @@ for i = 352 : 3000
     qw(i) = str2double(strcat(file(k(i)+58),file(k(i)+59),file(k(i)+60),strcat(file(k(i)+61),file(k(i)+62),file(k(i)+63))));
 end
 % plot groundtruth
-pose = [0,0,0];
-for i = 352:3000
-   pose = [pose;[pose(i-351,1)+tx(i),pose(i-351,2)+ty(i),pose(i-351,3)+tz(i)]]; 
+poseGT = [0,0,0];
+for i = 2:3000
+   poseGT = [poseGT;[poseGT(i-1,1)+tx(i),poseGT(i-1,2)+ty(i),poseGT(i-1,3)+tz(i)]]; 
 end
-plot3(pose(:,1),pose(:,2),pose(:,3));
+plot3(tx(i),ty(i),tz(i));
 	
 
