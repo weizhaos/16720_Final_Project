@@ -66,15 +66,12 @@ end
    
 %% Save and visualization
 %loadGT();
-load('ground_trueth.mat');
-delPosGT = [tx',ty',tz',qx',qy',qz',qw'];
-% poseGT = 
-%{
+load('ground_truth.mat');
+deltaPosGT = [tx,ty,tz,qw,qx,qy,qz];
+poseGT = cameraPosQuat([0,0,0],deltaPosGT);
 % plot groundtruth
-poseGT = [0,0,0];
-for i = 2:3000
-   poseGT = [poseGT;[poseGT(i-1,1)+tx(i),poseGT(i-1,2)+ty(i),poseGT(i-1,3)+tz(i)]]; 
-end
-plot3(tx(i),ty(i),tz(i));
+plot3(poseGT(:,1),poseGT(:,2),poseGT(:,3),'g.');
 %}	
-
+% deal with estimated result
+posET = cameraPos([0,0,0],deltaPosT);
+plot3(posET(:,1),posET(:,2),posET(:,3));

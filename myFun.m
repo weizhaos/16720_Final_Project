@@ -5,6 +5,7 @@ function residue = myFun(deltPose, Xprev, Xcurrent, k)
 T = deltPose(1:3)';
 theta = deltPose(4:6)';
 
+%R = rotationVectorToMatrix(theta);
 R = rodrigues(theta);
 R_1 = R(1,:);
 R_2 = R(2,:);

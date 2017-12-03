@@ -1,5 +1,5 @@
 function loadGT()
-%{
+%
 gt = fileread('../data/rgbd_dataset_freiburg1_xyz/groundtruth.txt');
 t1 = gt(101:166);
 % compare to groud truth 
@@ -21,7 +21,13 @@ for i = 352 : 3000
     qz(i) = str2double(strcat(file(k(i)+51),file(k(i)+52),file(k(i)+53),strcat(file(k(i)+54),file(k(i)+55),file(k(i)+56))));
     qw(i) = str2double(strcat(file(k(i)+58),file(k(i)+59),file(k(i)+60),strcat(file(k(i)+61),file(k(i)+62),file(k(i)+63))));
 end
-
+tx=tx(tx~=0);
+ty=ty(ty~=0);
+tz=tz(tz~=0);
+qx=qx(qx~=0);
+qy=qy(qy~=0);
+qz=qz(qz~=0);
+qw=qw(qw~=0);
 save('ground_truth.mat','tx','ty','tz','qx','qy','qz','qw');
 %}
 end

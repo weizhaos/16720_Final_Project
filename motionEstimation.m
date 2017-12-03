@@ -20,6 +20,7 @@ options.Algorithm = 'levenberg-marquardt';
 options.MaxFunctionEvaluations = 10000;
 fun = @(deltPos) myFun(deltPos, Xprev, Xcurrent, numD);
 [deltaPos,resnorm] = lsqnonlin(fun,deltaPosInit,[],[],options);
+resnorm
 %}
 % minPose = fminunc(@myFun, pose, ...
 %            optimset ('MaxFunEvals', 10000, ...
