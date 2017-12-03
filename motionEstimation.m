@@ -16,7 +16,6 @@ lastSOS = Inf; % Sum of Square
 lastddeltaPose = 0; % LM delta vector
 
 %% inner solver
-%Xcurrent(:,3) = ones(size(Xcurrent,1),1);
 options.Algorithm = 'levenberg-marquardt';
 options.MaxFunctionEvaluations = 10000;
 fun = @(deltPos) myFun(deltPos, Xprev, Xcurrent, numD);
