@@ -6,8 +6,9 @@ function pose = motionEstimation(featurePrev, featureCurrent, numD, poseOrin)
 %        posOrin [1 6]: the initial pose to optimize from
 % OUTPUT: pose is the optimized frame to frame estimated pose
 %% hyperparamers
-epsi = 3e-4; % LM converge check
-iter = 300; % LM max itertaion
+epsiT = 3e-4; % LM converge check
+epsiTheta = 5e-3; % LM converge check
+iter = 100; % LM max itertaion
 lambda = 0.01; % LM damping value
 DROP = 0.1 ; % LM damping factor
 BOOST = 1.5; % LM damping factor
@@ -61,7 +62,7 @@ for k = 1:iter
     % update r T
     pose = pose + lastdeltaPose - deltaPose';
     % converged
-    if norm(deltaPose(1:3))<epsi && norm(deltaPose(4:6))<epsi
+    if norm(deltaPose(1:3))<epsiT && norm(deltaPose(4:6))<epsiTheta
         break;
     end
 end
