@@ -1,5 +1,5 @@
 function generate_txt(trans, quad)
-fpathRgb = 'data/rgbd_dataset_freiburg1_xyz/rgb/';
+fpathRgb = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
 RGB_imagefiles = dir(strcat(fpathRgb,'/*.png'));
 name = zeros(length(RGB_imagefiles)-1,1);
 for i = 2 : length(RGB_imagefiles)

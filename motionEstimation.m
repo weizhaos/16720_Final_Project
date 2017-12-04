@@ -14,8 +14,9 @@ DROP = 0.1 ; % LM damping factor
 BOOST = 1.5; % LM damping factor
 lastSOS = Inf; % Sum of Square
 lastddeltaPose = 0; % LM delta vector
-%
+ 
 %% inner solver
+%options = optimset('Jacobian','on');
 options.Algorithm = 'levenberg-marquardt';
 options.MaxFunctionEvaluations = 10000;
 fun = @(deltPos) myFun(deltPos, Xprev, Xcurrent, numD);
