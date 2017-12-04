@@ -1,0 +1,10 @@
+function generate_txt(txt_name, trans, quad)
+format long e 
+ex = importdata(txt_name);
+time_stamp = ex.data(:,1);
+result = [time_stamp,trans,quad];
+fileID = fopen('result.txt', 'w');
+fprintf(fileID,'%15.4f %7.4f\n', y);
+fclose(fileID);
+end
+
