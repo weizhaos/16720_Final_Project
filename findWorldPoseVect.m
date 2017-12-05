@@ -15,7 +15,6 @@ for i = 2:size(tmat,2)
     H_previous = temp;
 end
 
-
 % groungTruth [7 N]
 % [tx,ty,tz,qw,qx,qy,qz]
 posesGT = zeros(4,size(gt,2));

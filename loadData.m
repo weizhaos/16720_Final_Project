@@ -8,7 +8,6 @@ function data = loadData(fpathRGB,fpathDEP)
 data = cell(1,2);
 %read images
 RGB_imagefiles = dir(strcat(fpathRGB,'/*.png'));
-
 %DEP_imgefiles = dir(strcat(fpathDEP,'/*.png'));
 DEP_imgefiles = dir(strcat(fpathDEP,'/*.depth'));
 
