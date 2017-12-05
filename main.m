@@ -8,9 +8,9 @@ TODO LIST:
 %% global parameters
 maxFeatNum = 100; % The maximum number of features to keep in one frame
 minFeatNum = 50; % The minimum number of features to keep in one frame
-distribute = [32,32]; % How should the uniform grid form for feature extraction
-BAGap = 0;% 5 image-to-save for BA gap
-BADo = 0;% 40 how many images to do one BA
+distribute = [10,10]; % How should the uniform grid form for feature extraction
+BAGap = 5;% 5 image-to-save for BA gap
+BADo = 40;% 40 how many images to do one BA
 load intrinsicROSDefault.mat
 K = [fx, 0 , cx;
      0 , fy, cy;
@@ -42,12 +42,14 @@ C_depth_y = 1.2;
 %load ../data/data.mat
 deltaPos = initialPose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
-[featurePrev, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
+[featurePrev, featureID, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
 
 %% Frame to Frame
 % main loop
 deltaPosT = [];
 reproError = [];
+BAbufferXprev = [];
+BAbufferXcurrent = [];
 for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
@@ -56,7 +58,7 @@ for i = 2:totalStamp
     depCurr = data{2}(:,:,i);
     flowmap = flow{i-1};
     % optical Flow to track the feature to current frame
-    [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
+    [featurePrev, featureCurrent, featureID, k] = featurePrep(featurePrev, featureID, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
     % transfer to 3D world coordinates
     [xPrev, xCurrent] = transferToWorldCoord(featurePrev, featureCurrent);
@@ -83,11 +85,15 @@ for i = 2:totalStamp
     error = xPixel - featureCurrent(:,1:2);
     reproError = [reproError, sum(sqrt(sum(error.^2,2)))/size(featureCurrent,1)];
     % BA
+    %{
     if mod(i,BAGap) == 0
+        BAbufferXprev = [BAbufferXprev];
+        BAbufferXcurrent = [BAbufferXcurrent ];
     end
     if mod(i,BADo) == 0
         bundleAdjustment();
     end
+    %}
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
         % or directly re-extract all features, which should be better

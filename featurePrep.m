@@ -1,4 +1,5 @@
-function [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, grayPrev, depPrev, grayCurr, depCurr)
+function [featurePrev, featureCurrent, featureID, k] = featurePrep(featurePrev, featureID, ...
+    k, flowmap, grayPrev, depPrev, grayCurr, depCurr)
 % This function prepares the features used for the frame to frame motion
 % estimation using Optical Flow KLT
 % INPUT: Gray-D images for previous and current frame. All Size [H W] double

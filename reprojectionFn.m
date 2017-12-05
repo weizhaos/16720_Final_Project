@@ -119,7 +119,7 @@ function [residual, jacobian] = reprojectionFn(x)
 %     plot(residual,'.r');
 %     drawnow;
 
-    fprintf('D(%4d/%4d):%4.2f ND(%4d/%4d):%4.2f equations used\n', depthCounter,m,depthCounter*100/m, noDepthCounter,n,noDepthCounter*100/n);
+    %fprintf('D(%4d/%4d):%4.2f ND(%4d/%4d):%4.2f equations used\n', depthCounter,m,depthCounter*100/m, noDepthCounter,n,noDepthCounter*100/n);
     
     residual = residual';
  end
