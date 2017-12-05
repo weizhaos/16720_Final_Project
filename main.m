@@ -36,7 +36,7 @@ for i = 2:totalStamp
     grayPrev = [];% data{1}(:,:,i-1);
     depPrev = [];% data{2}(:,:,i-1);
     grayCurr = [];% data{1}(:,:,i);
-    depCurr = data{1}(:,:,i);
+    depCurr = data{2}(:,:,i);
     flowmap = flow{i-1};
     % optical Flow to track the feature to current frame
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...

@@ -17,19 +17,26 @@ global C_depth_y;
 C_nodepth = 0.001;%0.5;%0.7;%0.1;
 C_depth_x = 1.2;%2.2;%3;%1.2;%0.3;
 C_depth_y = 1.2;
-
+%
 fx = 525.0;  % focal length x
 fy = 525.0;  % focal length y
 cx = 319.5;  % optical center x
 cy = 239.5;  % optical center y
 K = [fx,0,cx;0,fy,cy;0,0,1];
-
+%}
+%{
+fx = 481.20;  % focal length x
+fy = -480.00;  % focal length y
+cx = 319.5;  % optical center x
+cy = 239.5;  % optical center y
+K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
 %T__k_1__0 = vect2Htrans([1.3563 0.6305 1.6380 -1.5523   -1.5092    0.8382]');
 %Tmat = zeros(3,797);
 
 %% Initialization
-%load ../../data/flow.mat
-%load ../../data/data.mat
+load ../../data/flow.mat
+load ../../data/data.mat
 %data = loadData('../../data/subset','../../data/subset');
 %flow = loadFlow('../../data/subset');
 vT__k__k_1 = zeros(6,1) + 1e-15;
@@ -45,7 +52,7 @@ for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
     depPrev = [];% data{2}(:,:,i-1);
-    grayCurr = [];% data{1}(:,:,i);
+    grayCurr = [];% data{1}(:,:,i)
     depCurr = data{2}(:,:,i);
     flowmap = flow{i-1};
     % optical Flow to track the feature to current frame
@@ -63,16 +70,8 @@ for i = 2:totalStamp
     options = optimset('Jacobian','on');
     options.Algorithm = 'levenberg-marquardt';
     [vT__k__k_1, resnorm,residual,exitflag,output,lambda,jacobian] = lsqnonlin('reprojectionFn',vT__k__k_1, [], [], options);
-    %{
-    T__k__k_1 = vect2Htrans(vT__k__k_1);
-    T__0__k = T__k_1__0^(-1) * T__k__k_1^(-1);
-    vT__0__k = Htrans2Vect(T__0__k);
-    Tmat(:,i) = vT__0__k(1:3);
-    %}
-    %t = theta2rot(vT__k__k_1(4:6))*xPrev' + vT__k__k_1(1:3);
-    %t = t';
-    tmat(:,i) = vT__k__k_1;
-    
+    tmat(:,i) = vT__k__k_1;    
+    fprintf('Error: %f\n',resnorm);
     % find reproject error
     t = theta2rot(vT__k__k_1(4:6))*xPrev' + vT__k__k_1(1:3);
     xPixel = K*t;
@@ -82,8 +81,6 @@ for i = 2:totalStamp
     xPixel =  ( xPixel(1:2,:)./xPixel(3,:) )';
     error = xPixel - featureCurrent(:,1:2);
     reproError = [reproError, sum(sqrt(sum(error.^2,2)))/size(featureCurrent,1)];
-    
-    fprintf('Error: %f\n',resnorm);
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
         % or directly re-extract all features, which should be better
@@ -97,12 +94,15 @@ end
 %% Save and visualization
 %loadGT();
 load('ground_truth.mat');
-deltaPosGT = [tx,ty,tz,qw,qx,qy,qz];
-poseGT = cameraPosQuat([0,0,0],deltaPosGT);
+gt = [tx,ty,tz,qw,qx,qy,qz]';
+[poses,posesGT] = findWorldPoseVect(tmat, gt);
 % plot groundtruth
-plot3(poseGT(:,1),poseGT(:,2),poseGT(:,3),'g.');
+figure
+hold on
+plot3(posesGT(1,:),posesGT(2,:),posesGT(3,:),'g');
+plot3(poses(1,:),poses(2,:),poses(3,:),'r');
 %}	
 % deal with estimated result
-formResult();
-posET = cameraPos([0,0,0],deltaPosT);
-plot3(posET(:,1),posET(:,2),posET(:,3));
+resu = formResult(tmat);
+generate_txt(resu(2:end,1:3),resu(2:end,4:7));
+%}

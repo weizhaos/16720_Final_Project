@@ -9,6 +9,8 @@ function [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap,
 imgsize = size(flowmap); % [height, width, 2]
 nFeature = size(featurePrev,1);
 i = 1;
+papp = [];
+capp = [];
 while(i<=k)
     pos = featurePrev(i,1:2);
     flow = flowmap(floor(pos(1)),floor(pos(2)),:);
@@ -19,8 +21,16 @@ while(i<=k)
         k = k - 1;
         nFeature = nFeature - 1;
     else
-        featureCurrent(i,:) = [new_pos(1) new_pos(2) depCurr(new_pos(1),new_pos(2))];
-        i = i+1;
+        if depCurr(new_pos(1),new_pos(2)) == 0
+            capp = [capp;new_pos(1) new_pos(2) 1];
+            k = k - 1;
+            nFeature = nFeature - 1;
+            papp = [papp;featurePrev(i,:)];
+            featurePrev(i,:) = [];
+        else
+            featureCurrent(i,:) = [new_pos(1) new_pos(2) depCurr(new_pos(1),new_pos(2))];
+            i = i+1;
+        end
     end
 end
 % without depth
@@ -37,5 +47,6 @@ while(i<=nFeature)
         i = i+1;
     end
 end
-
+featurePrev = [featurePrev;papp];
+featureCurrent = [featureCurrent;capp];
 end

@@ -7,6 +7,14 @@ fy = 525.0;  % focal length y
 cx = 319.5;  % optical center x
 cy = 239.5;  % optical center y
 K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
+%{
+fx = 481.20;  % focal length x
+fy = -480.00;  % focal length y
+cx = 319.5;  % optical center x
+cy = 239.5;  % optical center y
+K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
 
 % convert [H,W] to [x,y]
 temp = featurePrev(:,1);
