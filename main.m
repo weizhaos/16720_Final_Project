@@ -15,7 +15,23 @@ load intrinsicROSDefault.mat
 K = [fx, 0 , cx;
      0 , fy, cy;
      0 , 0 ,  1;];
- 
+%{
+fx = 481.20;  % focal length x
+fy = -480.00;  % focal length y
+cx = 319.5;  % optical center x
+cy = 239.5;  % optical center y
+K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
+      
+global features;
+global C_nodepth;
+global C_depth_x;
+global C_depth_y;
+
+C_nodepth = 0.001;%0.5;%0.7;%0.1;
+C_depth_x = 1.2;%2.2;%3;%1.2;%0.3;
+C_depth_y = 1.2;
+
 %% Initialization
 % fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb/';
 % fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth/';
@@ -31,6 +47,7 @@ totalStamp = size(data{1},3);
 %% Frame to Frame
 % main loop
 deltaPosT = [];
+reproError = [];
 for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
@@ -42,12 +59,29 @@ for i = 2:totalStamp
     [featurePrev, featureCurrent, k] = featurePrep(featurePrev, k, flowmap, ...
         grayPrev, depPrev, grayCurr, depCurr);
     % transfer to 3D world coordinates
-    [Xprev, Xcurrent] = transferToWorldCoord(K, featurePrev, featureCurrent);
+    [xPrev, xCurrent] = transferToWorldCoord(featurePrev, featureCurrent);
     % solve frame to frame motion estimation
-    deltaPos = motionEstimation(Xprev, Xcurrent, k, deltaPos);
-    % add in poses
-    deltaPosT = [deltaPosT; deltaPos];
-    % poses = [poses; poses(end,:)+deltaPos];
+    xbk_1 = xPrev(:,1:2)./xPrev(:,3);
+    temp1 = ones(size(xPrev,1),1);
+    temp0 = zeros(size(xPrev,1),1);
+    temp0(1:k,1) = 1;
+    features = [temp1, xbk_1, temp0, xPrev, xCurrent(:,1:2)];
+    % motion estimation 
+    reprojectFn = @(x) reprojectionFn(x);
+    options = optimset('Jacobian','on');
+    options.Algorithm = 'levenberg-marquardt';
+    [deltaPos, resnorm,residual,exitflag,output,lambda,jacobian] = lsqnonlin('reprojectionFn',deltaPos, [], [], options);
+    fprintf('Error: %f\n',resnorm);
+    deltaPosT(:,i) = deltaPos;    
+    % find reproject error
+    t = theta2rot(vT__k__k_1(4:6))*xPrev' + vT__k__k_1(1:3);
+    xPixel = K*t;
+    temp = xPixel(1,:);
+    xPixel(1,:) = xPixel(2,:);
+    xPixel(2,:) = temp;
+    xPixel =  ( xPixel(1:2,:)./xPixel(3,:) )';
+    error = xPixel - featureCurrent(:,1:2);
+    reproError = [reproError, sum(sqrt(sum(error.^2,2)))/size(featureCurrent,1)];
     % BA
     if mod(i,BAGap) == 0
     end
@@ -65,13 +99,16 @@ for i = 2:totalStamp
 end
    
 %% Save and visualization
-%loadGT();
 load('ground_truth.mat');
-deltaPosGT = [tx,ty,tz,qw,qx,qy,qz];
-poseGT = cameraPosQuat([0,0,0],deltaPosGT);
-% plot groundtruth
-plot3(poseGT(:,1),poseGT(:,2),poseGT(:,3),'g.');
+gt = [tx,ty,tz,qw,qx,qy,qz]';
+[poses,posesGT] = findWorldPoseVect(deltaPosT, gt);
+% plot
+figure
+hold on
+plot3(posesGT(1,:),posesGT(2,:),posesGT(3,:),'g');
+plot3(poses(1,:),poses(2,:),poses(3,:),'r');
 %}	
 % deal with estimated result
-posET = cameraPos([0,0,0],deltaPosT);
-plot3(posET(:,1),posET(:,2),posET(:,3));
+%resu = formResult(deltaPosT);
+%generate_txt(resu(2:end,1:3),resu(2:end,4:7));
+%}

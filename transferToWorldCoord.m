@@ -1,7 +1,21 @@
-function [Xprev, Xcurrent] = transferToWorldCoord(K, featurePrev, featureCurrent)
+function [Xprev, Xcurrent] = transferToWorldCoord(featurePrev, featureCurrent)
 % INPUT: featurePrev, featureCurrent [k 3]
 % OUTPUT: Xprev, Xcurrent [k 3]
+%
+fx = 525.0;  % focal length x
+fy = 525.0;  % focal length y
+cx = 319.5;  % optical center x
+cy = 239.5;  % optical center y
+K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
 %{
+fx = 481.20;  % focal length x
+fy = -480.00;  % focal length y
+cx = 319.5;  % optical center x
+cy = 239.5;  % optical center y
+K = [fx,0,cx;0,fy,cy;0,0,1];
+%}
+
 % convert [H,W] to [x,y]
 temp = featurePrev(:,1);
 featurePrev(:,1) = featurePrev(:,2);
@@ -22,7 +36,7 @@ Xcurrent = K \ featureCurrent';
 Xprev = Xprev';
 Xcurrent = Xcurrent';
 %}
-
+%{
 fx = 525.0;  % focal length x
 fy = 525.0;  % focal length y
 cx = 319.5;  % optical center x
@@ -48,5 +62,5 @@ for i = 1:size(featureCurrent,1)
     Xcurrent(i,1) = (v - cy) * Z / fy;
     Xcurrent(i,3) = Z;
 end
-
+%}
 end
