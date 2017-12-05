@@ -1,0 +1,16 @@
+function addtoBA(xPrev,featureID,k)
+
+global BAfeature;
+
+temp = zeros(size(xPrev,1),4);
+temp(:,1) = featureID;
+temp(:,2) = [ones(k,1);zeros(size(xPrev)-k,1)];
+temp(:,3:4) = xPrev(:,1:2)./xPrev(:,3);
+temp(:,3) = xPrev(:,1:2)./xPrev(:,3);
+BAbufferXprev = [BAbufferXprev];
+BAbufferXcurrent = [BAbufferXcurrent ];
+
+
+BAfeature = [BAfeature,temp];
+
+end

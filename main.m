@@ -27,6 +27,15 @@ global features;
 global C_nodepth;
 global C_depth_x;
 global C_depth_y;
+global BAfeature;
+BAfeature = cell(0);
+% BAfeature (1xn) cell, with n frames, each frame mx5, m differs for
+% different frames
+% for each frame:
+%   col 1 - feature id
+%   col 2 - has depth?
+%   col 3-4 - feature normalized location in this frame [xb,yb]
+%   col 5 - z
 
 C_nodepth = 0.001;%0.5;%0.7;%0.1;
 C_depth_x = 1.2;%2.2;%3;%1.2;%0.3;
@@ -43,6 +52,8 @@ C_depth_y = 1.2;
 deltaPos = initialPose(); % [1 6] now, later [N 6]
 totalStamp = size(data{1},3);
 [featurePrev, featureID, k] = featureExtraction(data{1}(:,:,1), data{2}(:,:,1), maxFeatNum, distribute);
+[xPrev, ~] = transferToWorldCoord(featurePrev, featurePrev);
+addtoBA(xPrev,featureID,k);
 
 %% Frame to Frame
 % main loop
@@ -85,10 +96,9 @@ for i = 2:totalStamp
     error = xPixel - featureCurrent(:,1:2);
     reproError = [reproError, sum(sqrt(sum(error.^2,2)))/size(featureCurrent,1)];
     % BA
-    %{
+    %
     if mod(i,BAGap) == 0
-        BAbufferXprev = [BAbufferXprev];
-        BAbufferXcurrent = [BAbufferXcurrent ];
+        addtoBA(xCurrent,featureID,k);
     end
     if mod(i,BADo) == 0
         bundleAdjustment();

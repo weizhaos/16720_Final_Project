@@ -28,6 +28,7 @@ for i = 1 : length(unique_window)
 end
 feature = double(feature);
 featureID = 1:size(feature,1);
+featureID = featureID';
 end
 %{
 figure();
