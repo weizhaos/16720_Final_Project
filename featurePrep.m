@@ -12,6 +12,7 @@ nFeature = size(featurePrev,1);
 i = 1;
 papp = [];
 capp = [];
+idapp = [];
 while(i<=k)
     pos = featurePrev(i,1:2);
     flow = flowmap(floor(pos(1)),floor(pos(2)),:);
@@ -19,6 +20,7 @@ while(i<=k)
     if new_pos(1) <= 0 || new_pos(1) > imgsize(1) || new_pos(2) <= 0 || new_pos(2) > imgsize(2)
         % remove the feature
         featurePrev(i,:) = [];
+        featureID(i) = [];
         k = k - 1;
         nFeature = nFeature - 1;
     else
@@ -27,7 +29,9 @@ while(i<=k)
             k = k - 1;
             nFeature = nFeature - 1;
             papp = [papp;featurePrev(i,:)];
+            idapp = [idapp;featureID(i)];
             featurePrev(i,:) = [];
+            featureID(i) = [];
         else
             featureCurrent(i,:) = [new_pos(1) new_pos(2) depCurr(new_pos(1),new_pos(2))];
             i = i+1;
@@ -42,6 +46,7 @@ while(i<=nFeature)
     if new_pos(1) <= 0 || new_pos(1) > imgsize(1) || new_pos(2) <= 0 || new_pos(2) > imgsize(2)
         % remove the feature
         featurePrev(i,:) = [];
+        featureID(i) = [];
         nFeature = nFeature - 1;
     else
         featureCurrent(i,:) = [new_pos(1) new_pos(2) 1];
@@ -50,4 +55,5 @@ while(i<=nFeature)
 end
 featurePrev = [featurePrev;papp];
 featureCurrent = [featureCurrent;capp];
+featureID = [featureID;idapp];
 end
