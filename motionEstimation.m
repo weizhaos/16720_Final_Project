@@ -28,7 +28,7 @@ fun = @(deltPos) myFun(deltPos, Xprev, Xcurrent, numD);
 %                      'MaxIter', 100000, ....
 %                      'Algorithm', 'levenberg-marquardt'), ...%, ...
 %                      featurePrev, featureCurrent, numD);
-%{
+%
 %% calculate Jacobian
 syms dp1 dp2 dp3 dp4 dp5 dp6
 residue = myFun([dp1 dp2 dp3 dp4 dp5 dp6], Xprev, Xcurrent, numD);

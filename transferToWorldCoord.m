@@ -6,6 +6,10 @@ fx = 525.0;  % focal length x
 fy = 525.0;  % focal length y
 cx = 319.5;  % optical center x
 cy = 239.5;  % optical center y
+fx = 517.3;
+fy = 516.5;	
+cx = 318.6;
+cy = 255.3;
 K = [fx,0,cx;0,fy,cy;0,0,1];
 %}
 %{

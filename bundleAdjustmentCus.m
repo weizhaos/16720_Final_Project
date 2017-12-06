@@ -1,4 +1,4 @@
-function X = bundleAdjustment()
+function X = bundleAdjustmentCus()
 
 global BAfeature;
 global BAframeNum;
@@ -20,20 +20,28 @@ for i = 1:size(fID{end},1)
         fID{j}(i,:) = BAfeature{j}(BAfeature{j}(:,1)==fid,:);
     end
 end
-% form H
-Hs = cell(size(BAfeature,1),size(BAfeature,2)-1);
+% form H, initX
+Hs = cell(1,size(BAfeature,2)-1);
+initX = zeros(6,size(BAfeature,2)-1);
+finit =  BAframeNum(1)+1;
 for i = 1:size(Hs,2)
-   fNum =  BAframeNum(i+1);
-   Hs{i} = vect2Htrans(deltaPosT(:,2));
-   for j = 3:fNum
+   fNum = BAframeNum(i+1);
+   Hs{i} = vect2Htrans(deltaPosT(:,finit));
+   for j = finit+1:fNum
        Hs{i} = vect2Htrans(deltaPosT(:,j)) * Hs{i};
    end
+   initX(:,i) = Htrans2Vect(Hs{i}); 
 end
+
+%initX = deltaPosT(:,finit:fNum);
 % start optimization
-initX = deltaPosT(:,BAframeNum(1)+1:BAframeNum(end)); % [6 N]
 [X, resnorm] = fminsearch(@baFun, initX, ...
-                   optimset ('MaxFunEvals', 100000, ...
-                         'MaxIter', 1000000, ....
+                   optimset ('MaxFunEvals', 10000, ...
+                         'MaxIter', 10000, ....
                          'Algorithm', 'levenberg-marquardt'));
+% options.Algorithm = 'levenberg-marquardt';
+% [X, resnorm] = lsqnonlin(@baFun,initX,[],[],options);
+
 fprintf('BA_Error: %f\n',resnorm);
+
 end

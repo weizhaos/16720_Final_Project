@@ -8,10 +8,15 @@ TODO LIST:
 %% global parameters
 maxFeatNum = 100; % The maximum number of features to keep in one frame
 minFeatNum = 50; % The minimum number of features to keep in one frame
-distribute = [10,10]; % How should the uniform grid form for feature extraction
+distribute = [32,32]; % How should the uniform grid form for feature extraction
 BAGap = 5;% 5 image-to-save for BA gap
 BADo = 40;% 40 how many images to do one BA
 load intrinsicROSDefault.mat
+fx = 517.3;
+fy = 516.5;	
+cx = 318.6;
+cy = 255.3;
+
 K = [fx, 0 , cx;
      0 , fy, cy;
      0 , 0 ,  1;];
@@ -28,28 +33,26 @@ global C_nodepth;
 global C_depth_x;
 global C_depth_y;
 global BAfeature;
-global fID;
 BAfeature = cell(0);
 % BAfeature (1xn) cell, with n frames, each frame mx5, m differs for
 % different frames
 % for each frame:
 %   col 1 - feature id
 %   col 2 - has depth?
-%   col 3-4 - feature normalized location in this frame [xb,yb]
-%   col 5 - z
+%   col 3-4 - feature in this frame [xb,yb]
+%   col 5 - zb
 global BAframeNum;
 BAframeNum = [];
 global deltaPosT;
 
-
-C_nodepth = 0.001;%0.5;%0.7;%0.1;
-C_depth_x = 1.2;%2.2;%3;%1.2;%0.3;
+C_nodepth = 0.001; %0.5;%0.7;%0.1;
+C_depth_x = 1.2;   %2.2;%3;%1.2;%0.3;
 C_depth_y = 1.2;
 
 %% Initialization
-fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb';
-fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth';
-fpathFLO = '../data/rgbd_dataset_freiburg1_xyz/rgb';
+%fpathRGB = '../data/rgbd_dataset_freiburg1_xyz/rgb';
+%fpathDEP = '../data/rgbd_dataset_freiburg1_xyz/depth';
+%fpathFLO = '../data/rgbd_dataset_freiburg1_xyz/rgb';
 %data = loadData(fpathRGB,fpathDEP);
 %flow = loadFlow(fpathFLO);
 %load ../data/flow.mat
@@ -64,6 +67,7 @@ addtoBA(xPrev,featureID,k,1);
 % main loop
 deltaPosT = [];
 reproError = [];
+BAposeT = [];
 for i = 2:totalStamp
     % add in data
     grayPrev = [];% data{1}(:,:,i-1);
@@ -99,19 +103,45 @@ for i = 2:totalStamp
     error = xPixel - featureCurrent(:,1:2);
     reproError = [reproError, sum(sqrt(sum(error.^2,2)))/size(featureCurrent,1)];
     % BA
-    %
+    %{
     if mod(i,BAGap) == 0
+        [xCurrent, ~] = transferToWorldCoord(featureCurrent, featureCurrent);
         addtoBA(xCurrent,featureID,k,i);
     end
     if mod(i,BADo) == 0
-        bundleAdjustment();
+        temp = bundleAdjustmentCus();
+        if ~isempty(BAposeT)
+            H_ref = inv(vect2Htrans(BAposeT(:,end)));
+            for i = 1:size(temp,2)
+                temp(:,i) = Htrans2Vect( H_ref * inv(vect2Htrans(temp(:,i))) );
+            end
+        end
+        BAposeT = [BAposeT,temp];
+        BAframeNum = BAframeNum(end);
+        BAfeature = BAfeature(end);
+        deltaPos = BAposeT(:,end);
     end
     %}
     % update previous feature vector
     if size(featureCurrent,1) <= minFeatNum
-        % or directly re-extract all features, which should be better
-        [featureCurrent, k] = featureExtraction(data{1}(:,:,i), ...
+        % do BA first
+%         addtoBA(xCurrent,featureID,k,i);
+%         temp = bundleAdjustmentCus();
+%         if ~isempty(BAposeT)
+%             H_ref = inv(vect2Htrans(BAposeT(:,end)));
+%             for i = 1:size(temp,2)
+%                 temp(:,i) = H_ref * inv(vect2Htrans(temp(:,i)));
+%             end
+%         end
+%         BAposeT = [BAposeT;temp];
+%         deltaPos = BAposeT(:,end);
+%         BAframeNum = [];
+%         BAfeature = cell(0);
+        % directly re-extract all features, which should be better
+        [featureCurrent, featureID, k] = featureExtraction(data{1}(:,:,i), ...
             data{2}(:,:,i), maxFeatNum, distribute);
+%         [~, xCurrent] = transferToWorldCoord(featureCurrent, featureCurrent);
+%         addtoBA(xCurrent,featureID,k,i);
     end
     featurePrev = featureCurrent;
     depPrev = depCurr;
@@ -120,12 +150,15 @@ end
 %% Save and visualization
 load('ground_truth.mat');
 gt = [tx,ty,tz,qw,qx,qy,qz]';
-[poses,posesGT] = findWorldPoseVect(deltaPosT, gt);
+[poses,posesGT, posesBA] = findWorldPoseVect(deltaPosT, gt, BAposeT);
 % plot
 figure
 hold on
-plot3(posesGT(1,:),posesGT(2,:),posesGT(3,:),'g');
-plot3(poses(1,:),poses(2,:),poses(3,:),'r');
+axis equal
+%plot3(posesGT(1,1:140),posesGT(2,1:140),posesGT(3,1:140),'g');
+plot3(posesGT(1,1:400),posesGT(2,1:400),posesGT(3,1:400),'g');
+plot3(poses(1,1:120),poses(2,1:120),poses(3,1:120),'r');
+%plot3(posesBA(1,:),posesBA(2,:),posesBA(3,:),'b');
 %}	
 % deal with estimated result
 %resu = formResult(deltaPosT);

@@ -1,4 +1,4 @@
-function [poses,posesGT] = findWorldPoseVect(tmat, gt)
+function [poses,posesGT, posesBA] = findWorldPoseVect(tmat, gt, BAT)
 % tmat [6 N]
 
 %% form H_ref
@@ -23,4 +23,11 @@ for i = 1:size(gt,2)
     angleTemp = quat2rotm(gt(4:end,i)');
     H_tran = [angleTemp,gt(1:3,i); 0,0,0,1];
     posesGT(:,i) =  H_tran * [0;0;0;1];
+end
+
+% BA
+posesBA = zeros(4,size(BAT,2));
+for i = 1:size(BAT,2)
+    temp = H_ref * inv(vect2Htrans(BAT(:,i)));
+    posesBA(:,i) =  temp * [0;0;0;1];
 end
