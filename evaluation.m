@@ -34,3 +34,13 @@ scatter3(posesGT(1,1),posesGT(2,1),posesGT(3,1),'g*')
 hold off
 
 
+figure
+hold on
+axis equal
+%plot3(posesGT(1,1:140),posesGT(2,1:140),posesGT(3,1:140),'g');
+plot3(posesGT(1,1:1050),posesGT(2,1:1050),posesGT(3,1:1050),'g');
+plot3(poses(1,1:314),poses(2,1:314),poses(3,1:314),'r');
+scatter3(poses(1,314),poses(2,314),poses(3,314),'r*')
+scatter3(posesGT(1,1050),posesGT(2,1050),posesGT(3,1050),'g*')
+scatter3(posesGT(1,1),posesGT(2,1),posesGT(3,1),'g*')
+hold off
